@@ -1,32 +1,23 @@
-let express = require('express'); // Express Server
-let bodyParser = require('body-parser'); // Post Body Request
-let exphbs = require('express-handlebars'); // Templating Engine
-// let logger = require("morgan"); // Logger
-var db = require("./models"); // Require all models
-let cheerio = require('cheerio'); // Web Scrapper
-let mongoose = require('mongoose'); // MongoDB ORM
-// let db from "./models"; // Require all models
-
-
+//requirements ===========================================================================================
+let express = require('express'); 
+let bodyParser = require('body-parser');
+let exphbs = require('express-handlebars');
+var db = require("./models");
+let cheerio = require('cheerio'); 
+let mongoose = require('mongoose');
 let PORT = process.env.PORT || 8080;
-let app = express(); // Initialize Express
-
-/////////////////////////////////////////////// /* Configure middleware */ //////////////////////////////////////////////////////////
-
-// app.use(logger("dev")); // Use morgan logger for logging requests
-app.use(bodyParser.urlencoded({ extended: false })); // Use body-parser for handling form submissions
+let app = express();
+//middleware==============================================================================================
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(express.static("public")); // Serve static content for the app from the "public" directory in the application directory.
-
-// Set Handlebars as the default templating engine.
+//define static content
+app.use(express.static("public"));
+//use handlebars as the engine for temlating
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
-
-/////////////////////////////////////////////// /* Configure Routes */ //////////////////////////////////////////////////////////
+//Routes requirement=======================================================================================
 require("./controllers/webScrapperController.js")(app);
-
-/////////////////////////////////////////////// /* Execution */ //////////////////////////////////////////////////////////
-
+//set server to listen ====================================================================================
 app.listen(PORT, ()=>{
     console.log(`App listening on PORT ${PORT}`);
 })

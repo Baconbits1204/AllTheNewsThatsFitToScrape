@@ -1,10 +1,10 @@
-/////////////////////////////////////////////// /* Imports */ //////////////////////////////////////////////////////////
+// Requirements ===========================================================================================
 let mongoose = require('mongoose');
 
-/////////////////////////////////////////////// /* Initialize */ //////////////////////////////////////////////////////////
+// initialize db schema ===================================================================================
 let Schema = mongoose.Schema; // Save a Reference to the Schema Constructor
 
-/////////////////////////////////////////////// /* Model*/ //////////////////////////////////////////////////////////
+// define schema ==========================================================================================
 
 let ArticleSchema = new Schema({ // Create a New Schema Constructor for News Article
 
@@ -32,19 +32,15 @@ let ArticleSchema = new Schema({ // Create a New Schema Constructor for News Art
     type: String
   },
 
-  // `comments` is an object that stores a Note id
-  // The ref property links the ObjectId to the Note model
-  // This allows us to populate the Article with an associated Comment
+  // link object id to note model to populate comments
   note: [{
     type: Schema.Types.ObjectId,
     ref: "Note"
   }]
 
-}); // End of New Schema
+}); 
 
-/////////////////////////////////////////////// /* Export */ //////////////////////////////////////////////////////////
-
-// This creates our model from the above schema, using mongoose's model method
+//Export ===========================================================================================
 let Article = mongoose.model("Article", ArticleSchema);
-
-module.exports = Article; // Export the Article Model
+// Export the Article Model
+module.exports = Article; 

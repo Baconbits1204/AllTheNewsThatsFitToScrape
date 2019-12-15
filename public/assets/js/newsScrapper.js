@@ -1,16 +1,16 @@
 $(document).ready(function() {
-    //create Modals ===============================================
+    //create Modals ======================================================================================
     $('#saveModal').modal(); // Articles Saved Modal
     $('#modalMessage').modal(); // Message Modal
     $('#articleModal').modal(); // Notes Modal
   
-    //Event Listeners ===============================================
-    //Request to scrape articles on button click ====================
+    //Event Listeners ====================================================================================
+    //Request to scrape articles on button click
     $('.searchArticle').on("click", () => { 
       // console.log("search button event listener");
       fetch("/api/search", {method: "GET"}).then(() => window.location.replace("/api/search"));
     });
-  // Request to save article on click ==================================
+  // Request to save article on click =====================================================================
     $('.addArticle').on("click", function(element) { 
       let headline = $(this).attr("data-headline");
       let summary = $(this).attr("data-summary");
@@ -19,7 +19,7 @@ $(document).ready(function() {
       let slug = $(this).attr("data-slug");
       let modalID = $(this).attr("data-url") + "modal"
   
-      // Create JSON to be Sent to Backend
+      // Create JSON to be Sent to Backend ================================================================
       let savedArticle = {
         headline,
         summary,
@@ -28,8 +28,8 @@ $(document).ready(function() {
         slug,
         comments: null
       };
-  
-      fetch("/api/add", { // Send savedArticle to the Server
+      // Send article to the server
+      fetch("/api/add", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -42,37 +42,28 @@ $(document).ready(function() {
         setTimeout(() => $("#modalMessage").modal('close'), 1500);
         $(document.getElementById(url)).css('display', 'none');
       });
-  
     }); // End addArticle Btn click
-  
-    $('.savedArticles').on("click", () => { // Query for Saved Articles
+    // Query for saved articles============================================================================
+    $('.savedArticles').on("click", () => { 
       console.log("Saved Button clicked");
       $(".collection").html("");
       $("#textarea1").val("");
-  
-      fetch("/api/savedArticles", {method: "GET"}).then(response => response.json()).then((response) => {
-  
+      fetch("/api/savedArticles", {
+        method: "GET"}).then(response => response.json()).then((response) => {
         response.map(article => {
           let articleDiv = "<li id='" + article["_id"] + "' data-url='" + article.url + "' data-slug='" + article.slug + "' class='collection-item avatar hover modal-trigger' href='#articleModal'><img src='" + article.imageURL + "'class='circle'><span class='title'>" + article.headline + "</span><p>" + article.summary + "</P><a class='secondary-content deleteArticle'><i class='material-icons hoverRed'>delete_forever</i></a></li>";
           $(".collection").prepend(articleDiv);
-  
-          sessionStorage.setItem(article["_id"], JSON.stringify(article)) // Store Article Data in sessionStorage
-  
-          // Event Listeners For Each Saved Article Button
-          $(document.getElementById(article["_id"])).on("click", function(event) { // Event Listenr For Saved Article
-  
+          sessionStorage.setItem(article["_id"], JSON.stringify(article))
+          // Event listeners for each saved article button================================================
+          $(document.getElementById(article["_id"])).on("click", function(event) { 
             let modalID = $(this).attr("id");
-  
             let sessionArticle = JSON.parse(sessionStorage.getItem(modalID));
             $('#articleModal').modal("open");
             let title = $(this).children(".title").text();
             $('#articleID').text(title);
-  
-  
-            $(".addComment").on("click", function() { // Event Listener for Adding Comments
-  
+            // Event listener for adding comments=========================================================
+            $(".addComment").on("click", function() { 
               let note = $('#textarea1').val();
-  
               let noteObject = {
                 body: {
                   body: note
@@ -81,8 +72,7 @@ $(document).ready(function() {
                   articleID: modalID
                 }
               }
-  
-              fetch("/api/createNotes", { // Send savedArticle to the Server
+              fetch("/api/createNotes", { 
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json'
@@ -93,8 +83,8 @@ $(document).ready(function() {
               });
             });
   
-  
-            fetch("/api/populateNote", { // Send savedArticle to the Server
+            // post comments===============================================================================
+            fetch("/api/populateNote", { 
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
@@ -106,7 +96,6 @@ $(document).ready(function() {
               $(".boxComments").html("");
               if (data.length >= 1) {
                 data.map((comment) => {
-  
                   if (comment === null) {
                     let notesDiv = "<div class='col s12 m7'><div class='card horizontal'><div class='card-image'><img src='https://lorempixel.com/100/190/nature/6'></div><div class='card-stacked center'><div class='card-content valign-wrapper'><p>No Notes.</p></div></div></div></div>";
                     $(".boxComments").prepend(notesDiv);
@@ -114,14 +103,11 @@ $(document).ready(function() {
                     let notesDiv = "<div class='col s12 m7' id='" + comment["_id"] + "'><div class='card horizontal'><div class='card-image'><img src='https://lorempixel.com/100/190/nature/6'></div><div class='card-stacked center'><div class='card-content valign-wrapper'><p>" + comment.body + "</p></div><div class='card-action deleteComment' data-id=" + comment["_id"] + "><a href='#'>Delete</a></div></div></div></div>";
                     $(".boxComments").prepend(notesDiv);
                   }
-  
-                  $(".deleteComment").on("click", function() { // Event Listener for Each Delete Note Button
-  
+                  // give each deleteComment button an event listener========================================
+                  $(".deleteComment").on("click", function() { 
                     let commentID = $(this).attr("data-id");
-  
-                    console.log("comment Id is" + commentID)
-  
-                    fetch("/api/deleteComment", { // Send savedArticle to the Server
+                    //delete comment ========================================================================
+                    fetch("/api/deleteComment", { 
                       method: 'POST',
                       headers: {
                         'Content-Type': 'application/json'
@@ -130,10 +116,9 @@ $(document).ready(function() {
                     }).then((response) => {
                       $(document.getElementById(comment["_id"])).css('display', 'none');
                     });
-  
                   });
-  
                 });
+
               } else {
                 let notesDiv = "<div class='col s12 m7'><div class='card horizontal'><div class='card-image'><img src='https://lorempixel.com/100/190/nature/6'></div><div class='card-stacked center'><div class='card-content valign-wrapper'><p>No Notes.</p></div></div></div></div>";
                 $(".boxComments").prepend(notesDiv);
@@ -145,7 +130,6 @@ $(document).ready(function() {
           $(".deleteArticle").on("click", function(event) { // Event Listenr For Saved Article Delete Button
             let modalID = $(this).parent().attr("id");
             let sessionArticle = JSON.parse(sessionStorage.getItem(modalID));
-  
             fetch("/api/deleteArticle", { // Send savedArticle to the Server
               method: 'POST',
               headers: {
@@ -159,11 +143,10 @@ $(document).ready(function() {
               setTimeout(() => $("#modalMessage").modal('close'), 2000);
               $(document.getElementById(sessionArticle["_id"])).css('display', 'none');
             });
-  
+
             event.stopPropagation();
           });
-  
         });
       });
-    }); // End savedArticles btn Click
-  }); // End of document.ready
+    }); 
+  }); 

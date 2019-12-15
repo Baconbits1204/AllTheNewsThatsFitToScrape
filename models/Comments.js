@@ -10,7 +10,7 @@ var commentSchema = new Schema({
 
 });
 
-// This creates our model from the above schema, using mongoose's model method
+// empty model from the above schema, using mongoose .model method
 var Comment = mongoose.model("Comment", commentSchema);
 
 // Export the Comment model

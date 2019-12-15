@@ -154,36 +154,30 @@ module.exports = (app) => {
     });
   }); // End deleteArticle Route
 
-  // Route for grabbing a specific Article by id, populate it with it's note
+  // post route to add a note based on article id====================================================
   app.post("/api/populateNote", function(req, res) {
-    // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
-    // console.log("ID is "+ req.body.articleID);
-
+    //find article by id, and query that id to the DB
     db.Articles.findOne({_id: req.body.articleID}).populate("Note"). // Associate Notes with the Article ID
     then((response) => {
-      // console.log("response is " + response);
-
-      if (response.note.length == 1) { // Note Has 1 Comment
-
+      //if the note has 1 comment...
+      if (response.note.length == 1) {
         db.Notes.findOne({'_id': response.note}).then((comment) => {
           comment = [comment];
-          console.log("Sending Back One Comment");
-          res.json(comment); // Send Comment back to the Client
+          // Send Comment back to the Client
+          res.json(comment); 
         });
-
-      } else { // Note Has 0 or more than 1 Comments
-
-        console.log("2")
+    // Note Has 0 or more than 1 Comments
+      } else { 
+         // If the id returns an article...
         db.Notes.find({
           '_id': {
-            "$in": response.note
+          "$in": response.note
           }
         }).then((comments) => {
-          // console.log("Sending Back Multiple Comments");
-          res.json(comments); // Send Comments back to the Client
+          res.json(comments);
         });
       }
-      // If we were able to successfully find an Article with the given id, send it back to the client
+    
     }).catch(function(err) {
       // If an error occurred, send it to the client
       res.json(err);
