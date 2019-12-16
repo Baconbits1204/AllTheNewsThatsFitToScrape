@@ -40,7 +40,7 @@ let ArticleSchema = new Schema({ // Create a New Schema Constructor for News Art
 
 }); 
 
-//Export ===========================================================================================
+//Export ===================================================================================================
 let Article = mongoose.model("Article", ArticleSchema);
 // Export the Article Model
 module.exports = Article; 
